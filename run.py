@@ -13,6 +13,7 @@ from termcolor import colored, cprint
 import pickle
 import time
 from utils.transforms import rigid_align
+import torch.onnx
 
 
 class Runner(object):
@@ -260,16 +261,20 @@ class Runner(object):
         with torch.no_grad():
             for step, image_path in enumerate(image_files):
                 image_name = image_path.split('/')[-1].split('_')[0]
+                print(image_path)
                 image = cv2.imread(image_path)[..., ::-1]
                 image = cv2.resize(image, (args.size, args.size))
                 input = torch.from_numpy(base_transform(image, size=args.size)).unsqueeze(0).to(self.device)
                 K = np.load(image_path.replace('_img.jpg', '_K.npy'))
+                print(K, args.size)
                 K[0, 0] = K[0, 0] / 224 * args.size
                 K[1, 1] = K[1, 1] / 224 * args.size
                 K[0, 2] = args.size // 2
                 K[1, 2] = args.size // 2
-
+                print(K)
                 out = self.model(input)
+                torch.onnx.export(self.model, (input, ), "demo.onnx", opset_version=11)
+                return
                 # silhouette
                 mask_pred = out.get('mask_pred')
                 if mask_pred is not None:

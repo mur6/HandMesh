@@ -8,12 +8,12 @@ from mobrecon.mobrecon_densestack import MobRecon
 from utils.read import spiral_tramsform
 from utils import utils, writer
 from options.base_options import BaseOptions
-from datasets.FreiHAND.freihand import FreiHAND
-from datasets.Human36M.human36m import Human36M
+# from datasets.FreiHAND.freihand import FreiHAND
+# from datasets.Human36M.human36m import Human36M
 from torch.utils.data import DataLoader
 from run import Runner
 from termcolor import cprint
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 
 if __name__ == '__main__':
     # get config
@@ -81,6 +81,7 @@ if __name__ == '__main__':
 
     # run
     runner = Runner(args, model, tmp['face'], device)
+    assert args.phase == "demo"
     if args.phase == 'train':
         # log
         writer = writer.Writer(args)
